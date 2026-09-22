@@ -1,40 +1,48 @@
-# Order Book Programming Exercise
+# Order book
 
-Produce a program which maintains price-time limit order books, one per trading symbol. The program
-should accept new orders, order cancellations, and flushes from a CSV file and publish top of book (best bid
-and ask) changes for each order book. Supporting trades or matching is optional. See the details below.
-
-# Instructions
-
-To compile the program run the following:
+Price–time limit order books, one per trading symbol: the program consumes a CSV of new
+orders, cancellations and flushes, and publishes top-of-book changes (best bid and best
+ask) for every book it touches.
 
 ```
 cargo build
-```
-To run the test cases:
-
-```
+cargo run input_csv.csv
 cargo test -- --show-output
 ```
 
-To run the input file sample:
+`cargo test -- --show-output` runs the exercise's scenarios; `input_csv.csv` is a small
+sample feed to run against.
 
-```
-cargo run input_csv.csv
-```
+## Layout
 
-# Considerations:
+| Path | Purpose |
+| --- | --- |
+| `src/csv_parse.rs` | CSV parsing |
+| `src/process_order.rs` | New order, cancel and flush handling |
+| `src/lib.rs` | Book structures and top-of-book output |
 
-Some bonus challenges were not solved in this solution, including:
-```
-    - Implementation of trade orders 
-    - Scenarios 13 and 14
-    - Including extra scenarios
-    - Containerizing the program
-```
-    
-    
-# Improvements To be Done:
-    - Reuse the same buffer while reading each line of the csv file to avoid allocating a new string for each line. (line 11: src/csv_parse.rs)
-    - While doing cancellations, the book is searched linearly. This could be improved using a binary search (line 77: src/process_order.rs).
-    - Implement threads to process operations simultaneously
+`serde` is vendored under `serde/` so the exercise builds without network access.
+
+## Open items
+
+Written as an exercise, and the bonus challenges were left out on purpose (trade
+execution, scenarios 13 and 14, containerising the program). The two things I would pick
+up next:
+
+- reuse the read buffer instead of allocating a fresh `String` per CSV line
+  (`src/csv_parse.rs`);
+- replace the linear scan used for cancellations with a binary search
+  (`src/process_order.rs`), and move the per-symbol books onto threads.
+
+<details>
+<summary>Original exercise brief</summary>
+
+Produce a program which maintains price-time limit order books, one per trading symbol.
+The program should accept new orders, order cancellations, and flushes from a CSV file and
+publish top of book (best bid and ask) changes for each order book. Supporting trades or
+matching is optional.
+
+Bonus challenges not solved in this solution: trade orders, scenarios 13 and 14, extra
+scenarios, containerising the program.
+
+</details>
